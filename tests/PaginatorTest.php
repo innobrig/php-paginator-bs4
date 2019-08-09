@@ -1,15 +1,16 @@
 <?php
 
-namespace JasonGrimes\Tests;
+namespace InnoBrig\Tests;
 
-use JasonGrimes\Paginator;
+use InnoBrig\Paginator\Paginator;
 
-class PaginatorTest extends \PHPUnit_Framework_TestCase
+
+class PaginatorTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Paginator */
     protected $paginator;
 
-    public function setUp()
+    public function setUp() : void
     {
         $numItems = 100;
         $itemsPerPage = 10;

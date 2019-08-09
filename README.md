@@ -1,11 +1,14 @@
-PHP Paginator
-=============
+PHP Paginator BS4
+=================
 
-[![Build Status](https://travis-ci.org/jasongrimes/php-paginator.svg?branch=master)](https://travis-ci.org/jasongrimes/php-paginator)
-[![Total Downloads](https://poser.pugx.org/jasongrimes/paginator/downloads.svg)](https://packagist.org/packages/jasongrimes/paginator)
-[![Latest Stable Version](https://poser.pugx.org/jasongrimes/paginator/v/stable.svg)](https://packagist.org/packages/jasongrimes/paginator) [![Latest Unstable Version](https://poser.pugx.org/jasongrimes/paginator/v/unstable.svg)](https://packagist.org/packages/jasongrimes/paginator) [![License](https://poser.pugx.org/jasongrimes/paginator/license.svg)](https://packagist.org/packages/jasongrimes/paginator)
+A lightweight PHP paginator, for generating pagination controls in the style of Stack Overflow and Flickr using Bootstrap4 CSS classes, forked from https://github.com/jasongrimes/php-paginator. 
+The "first" and "last" page links are shown inline as page numbers, and excess page numbers are replaced by ellipses.
 
-A lightweight PHP paginator, for generating pagination controls in the style of Stack Overflow and Flickr. The "first" and "last" page links are shown inline as page numbers, and excess page numbers are replaced by ellipses.
+## Improvements to original package
+* Use Bootstrap4 CSS classes
+* Fluid interface
+* Allow specification of outer and inner class additions
+* Better PHPDocs
 
 ## Screenshots
 
@@ -35,7 +38,7 @@ The small template renders the page number as a select list to save space:
 
 Install with composer: 
 
-    composer require "jasongrimes/paginator:~1.0"
+    composer require "innobrig/paginator:~1.0"
 
 ## Basic usage
 
@@ -45,7 +48,7 @@ Here's a quick example using the defaults:
     
     require '../vendor/autoload.php';
 
-    use JasonGrimes\Paginator;
+    use InnoBrig\Paginator;
 
     $totalItems = 1000;
     $itemsPerPage = 50;
@@ -58,7 +61,7 @@ Here's a quick example using the defaults:
     <html>
       <head>
         <!-- The default, built-in template supports the Twitter Bootstrap pagination styles. -->
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
       </head>
       <body>
 
@@ -77,22 +80,23 @@ This will output the following:
 <img src="examples/screenshot-default-mid.png" width="597">
 
     <ul class="pagination">
-      <li><a href="/foo/page/7">&laquo; Previous</a></li>
-      <li><a href="/foo/page/1">1</a></li>
-      <li class="disabled"><span>...</span></li>
-      <li><a href="/foo/page/5">5</a></li>
-      <li><a href="/foo/page/6">6</a></li>
-      <li><a href="/foo/page/7">7</a></li>
-      <li class="active"><a href="/foo/page/8">8</a></li>
-      <li><a href="/foo/page/9">9</a></li>
-      <li><a href="/foo/page/10">10</a></li>
-      <li><a href="/foo/page/11">11</a></li>
-      <li><a href="/foo/page/12">12</a></li>
-      <li class="disabled"><span>...</span></li>
-      <li><a href="/foo/page/20">20</a></li>
-      <li><a href="/foo/page/9">Next &raquo;</a></li>
+      <li class="page-item">
+        <a class="page-link" href="/foo/page/7#" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only">Next</span>
+        </a>
+      </li>
     </ul>
-    
+
 To render it with one of the other example templates, just make sure the variable is named `$paginator` and then include the template file:
 
     $paginator = new Paginator($totalItems, $itemsPerPage, $currentPage, $urlPattern);

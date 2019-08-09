@@ -1,6 +1,6 @@
 <?php
 
-namespace JasonGrimes;
+namespace InnoBrig\Paginator;
 
 class Paginator
 {
@@ -14,24 +14,30 @@ class Paginator
     protected $maxPagesToShow = 10;
     protected $previousText = 'Previous';
     protected $nextText = 'Next';
+    protected $classListOuter = [];
+    protected $classListInner = [];
 
     /**
      * @param int $totalItems The total number of items.
      * @param int $itemsPerPage The number of items per page.
      * @param int $currentPage The current page number.
      * @param string $urlPattern A URL for each page, with (:num) as a placeholder for the page number. Ex. '/foo/page/(:num)'
+     * @param array $classListOuter An array of class names you want to add to the pagination <ul> wrapper.
+     * @param array $classListInner An array of class names you want to add to the pagination <li> elements.
      */
-    public function __construct($totalItems, $itemsPerPage, $currentPage, $urlPattern = '')
+    public function __construct(int $totalItems, int $itemsPerPage, int $currentPage, string $urlPattern = '', array $classListOuter=[], array $classListInner=[])
     {
-        $this->totalItems = $totalItems;
-        $this->itemsPerPage = $itemsPerPage;
-        $this->currentPage = $currentPage;
-        $this->urlPattern = $urlPattern;
+        $this->totalItems     = $totalItems;
+        $this->itemsPerPage   = $itemsPerPage;
+        $this->currentPage    = $currentPage;
+        $this->urlPattern     = $urlPattern;
+        $this->classListOuter = $classListOuter;
+        $this->classListInner = $classListInner;
 
         $this->updateNumPages();
     }
 
-    protected function updateNumPages()
+    protected function updateNumPages() : void
     {
         $this->numPages = ($this->itemsPerPage == 0 ? 0 : (int) ceil($this->totalItems/$this->itemsPerPage));
     }
@@ -39,69 +45,81 @@ class Paginator
     /**
      * @param int $maxPagesToShow
      * @throws \InvalidArgumentException if $maxPagesToShow is less than 3.
+     * @return Paginator
      */
-    public function setMaxPagesToShow($maxPagesToShow)
+    public function setMaxPagesToShow(int $maxPagesToShow) : Paginator
     {
         if ($maxPagesToShow < 3) {
             throw new \InvalidArgumentException('maxPagesToShow cannot be less than 3.');
         }
-        $this->maxPagesToShow = $maxPagesToShow;
+	    $this->maxPagesToShow = $maxPagesToShow;
+
+	    return $this;
     }
 
     /**
      * @return int
      */
-    public function getMaxPagesToShow()
+    public function getMaxPagesToShow() : int
     {
         return $this->maxPagesToShow;
     }
 
     /**
      * @param int $currentPage
+     * @return Paginator
      */
-    public function setCurrentPage($currentPage)
+    public function setCurrentPage(int $currentPage) : Paginator
     {
         $this->currentPage = $currentPage;
+
+        return $this;
     }
 
     /**
      * @return int
      */
-    public function getCurrentPage()
+    public function getCurrentPage() : int
     {
         return $this->currentPage;
     }
 
     /**
      * @param int $itemsPerPage
+     * @return Paginator
      */
-    public function setItemsPerPage($itemsPerPage)
+    public function setItemsPerPage(int $itemsPerPage) : Paginator
     {
         $this->itemsPerPage = $itemsPerPage;
         $this->updateNumPages();
+
+        return $this;
     }
 
     /**
      * @return int
      */
-    public function getItemsPerPage()
+    public function getItemsPerPage() : int
     {
         return $this->itemsPerPage;
     }
 
     /**
      * @param int $totalItems
+     * @return Paginator
      */
-    public function setTotalItems($totalItems)
+    public function setTotalItems(int $totalItems) : Paginator
     {
         $this->totalItems = $totalItems;
         $this->updateNumPages();
+
+        return $this;
     }
 
     /**
      * @return int
      */
-    public function getTotalItems()
+    public function getTotalItems() : int
     {
         return $this->totalItems;
     }
@@ -109,23 +127,26 @@ class Paginator
     /**
      * @return int
      */
-    public function getNumPages()
+    public function getNumPages() : int
     {
         return $this->numPages;
     }
 
     /**
      * @param string $urlPattern
+     * @return Paginator
      */
-    public function setUrlPattern($urlPattern)
+    public function setUrlPattern(string $urlPattern) : Paginator
     {
         $this->urlPattern = $urlPattern;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getUrlPattern()
+    public function getUrlPattern() : string
     {
         return $this->urlPattern;
     }
@@ -134,12 +155,15 @@ class Paginator
      * @param int $pageNum
      * @return string
      */
-    public function getPageUrl($pageNum)
+    public function getPageUrl(int $pageNum) : string
     {
         return str_replace(self::NUM_PLACEHOLDER, $pageNum, $this->urlPattern);
     }
 
-    public function getNextPage()
+    /**
+     * @return int|null
+     */
+    public function getNextPage() : ?int
     {
         if ($this->currentPage < $this->numPages) {
             return $this->currentPage + 1;
@@ -148,7 +172,10 @@ class Paginator
         return null;
     }
 
-    public function getPrevPage()
+    /**
+     * @return int|null
+     */
+    public function getPrevPage() : ?int
     {
         if ($this->currentPage > 1) {
             return $this->currentPage - 1;
@@ -157,7 +184,10 @@ class Paginator
         return null;
     }
 
-    public function getNextUrl()
+    /**
+     * @return string|null
+     */
+    public function getNextUrl() : ?string
     {
         if (!$this->getNextPage()) {
             return null;
@@ -169,7 +199,7 @@ class Paginator
     /**
      * @return string|null
      */
-    public function getPrevUrl()
+    public function getPrevUrl() : ?string
     {
         if (!$this->getPrevPage()) {
             return null;
@@ -194,7 +224,7 @@ class Paginator
      *
      * @return array
      */
-    public function getPages()
+    public function getPages() : array
     {
         $pages = array();
 
@@ -245,9 +275,9 @@ class Paginator
      *
      * @param int $pageNum
      * @param bool $isCurrent
-     * @return Array
+     * @return array
      */
-    protected function createPage($pageNum, $isCurrent = false)
+    protected function createPage(int $pageNum, bool $isCurrent = false) : array
     {
         return array(
             'num' => $pageNum,
@@ -259,7 +289,7 @@ class Paginator
     /**
      * @return array
      */
-    protected function createPageEllipsis()
+    protected function createPageEllipsis() : array
     {
         return array(
             'num' => '...',
@@ -273,39 +303,60 @@ class Paginator
      *
      * @return string
      */
-    public function toHtml()
+    public function toHtml() : string
     {
         if ($this->numPages <= 1) {
             return '';
         }
 
-        $html = '<ul class="pagination">';
-        if ($this->getPrevUrl()) {
-            $html .= '<li><a href="' . htmlspecialchars($this->getPrevUrl()) . '">&laquo; '. $this->previousText .'</a></li>';
+	    $html        = '<ul class="pagination ' . implode(' ', $this->classListOuter) . '">';
+	    $urlPrev     = $this->getPrevUrl();
+        $classAddon  = implode(' ', $this->classListInner);
+	    if ($urlPrev) {
+            $encoded = htmlspecialchars($urlPrev);
+	        $text    = $this->previousText;
+	        $class   = "page-link $classAddon";
+            $html   .= "<li><a class='$class' href='$encoded' aria-label='$text'><span aria-hidden='true'>&laquo;</span><span class='sr-only'>$text</span></a></li>";
         }
 
-        foreach ($this->getPages() as $page) {
+	    foreach ($this->getPages() as $page) {
+            $encoded = htmlspecialchars($page['url']);
+            $text    = htmlspecialchars($page['num']);
+            $class   = "page-item $classAddon";
+            if ($page['isCurrent']) {
+                $class .= ' active';
+            }
             if ($page['url']) {
-                $html .= '<li' . ($page['isCurrent'] ? ' class="active"' : '') . '><a href="' . htmlspecialchars($page['url']) . '">' . htmlspecialchars($page['num']) . '</a></li>';
+                $html .= "<li class='$class'><a class='page-link' href='$encoded'>$text</a></li>";
             } else {
-                $html .= '<li class="disabled"><span>' . htmlspecialchars($page['num']) . '</span></li>';
+                $html .= "<li class='$class disabled'><span>'$text</span></li>";
             }
         }
 
-        if ($this->getNextUrl()) {
-            $html .= '<li><a href="' . htmlspecialchars($this->getNextUrl()) . '">'. $this->nextText .' &raquo;</a></li>';
+	    $urlNext = $this->getNextUrl();
+        if ($urlNext) {
+            $encoded = htmlspecialchars($urlNext);
+            $text    = $this->nextText;
+	        $class   = "page-link $classAddon";
+            $html   .= "<li><a class='$class' href='$encoded' aria-label='$text'><span aria-hidden='true'>&raquo;</span><span class='sr-only'>$text</span></a></li>";
         }
         $html .= '</ul>';
 
         return $html;
     }
 
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString() : string
     {
         return $this->toHtml();
     }
 
-    public function getCurrentPageFirstItem()
+    /**
+     * @return int|null
+     */
+    public function getCurrentPageFirstItem() : ?int
     {
         $first = ($this->currentPage - 1) * $this->itemsPerPage + 1;
 
@@ -316,7 +367,10 @@ class Paginator
         return $first;
     }
 
-    public function getCurrentPageLastItem()
+    /**
+     * @return int|null
+     */
+    public function getCurrentPageLastItem() : ?int
     {
         $first = $this->getCurrentPageFirstItem();
         if ($first === null) {
@@ -331,15 +385,26 @@ class Paginator
         return $last;
     }
 
-    public function setPreviousText($text)
+    /**
+     * @param string $text
+     * @return Paginator
+     */
+    public function setPreviousText(string $text) : Paginator
     {
         $this->previousText = $text;
+
         return $this;
     }
 
-    public function setNextText($text)
+    /**
+     * @param string $text
+     * @return Paginator
+     */
+    public function setNextText(string $text) : Paginator
     {
         $this->nextText = $text;
+
         return $this;
     }
 }
+
